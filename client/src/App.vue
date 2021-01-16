@@ -2,6 +2,7 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="font-bold text-6xl">hello world</div>
   </div>
 </template>
 
@@ -17,6 +18,8 @@ export default {
 </script>
 
 <style>
+@import './assets/css/tailwind.css';
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
