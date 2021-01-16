@@ -1,29 +1,45 @@
 <template>
   <div id="app">
     <navbar/>
-    <homepage/>
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+    <router-view/>
   </div>
 </template>
 
 <script>
 import Navbar from "./components/Navbar.vue"
-import Homepage from './pages/Homepage.vue'
 
 export default {
   name: 'App',
   components: {
-    Homepage,
     Navbar,
   }
-}
+ }
 </script>
 
-<style>
-@import './assets/css/tailwind.css';
 
+<style>
 #app {
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>
