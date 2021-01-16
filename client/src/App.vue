@@ -1,18 +1,19 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-    <div class="font-bold text-6xl">hello world</div>
+    <navbar/>
+    <homepage/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Navbar from "./components/Navbar.vue"
+import Homepage from './pages/Homepage.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Homepage,
+    Navbar,
   }
 }
 </script>
@@ -21,11 +22,8 @@ export default {
 @import './assets/css/tailwind.css';
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
