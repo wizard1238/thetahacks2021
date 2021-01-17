@@ -9,7 +9,9 @@ var patientSchema = new mongoose.Schema({
     problems: {
         type: String,
         enum: ["anorexia", "bulimia", "rumination"]
-    }
+    },
+    lat: Number,
+    lon: Number
 })
 
-module.exports = new mongoose.Model('patientModel', patientSchema)
+module.exports = new mongoose.model('patientModel', patientSchema)

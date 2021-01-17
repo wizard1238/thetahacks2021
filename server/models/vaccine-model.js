@@ -11,4 +11,4 @@ var vaccineSchema = new mongoose.Schema({
     symptoms: String,
 })
 
-module.exports = new mongoose.Model('vaccineModel', vaccineSchema)
+module.exports = new mongoose.model('vaccineModel', vaccineSchema)

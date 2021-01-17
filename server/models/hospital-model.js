@@ -11,6 +11,8 @@ var hospitalSchema = mongoose.Schema({
     n95MasksNeeded: Number,
     faceShieldsNeeded: Number,
     suitsNeeded: Number,
+    lat: Number,
+    lon: Number
 })
 
-module.exports = new mongoose.Model('hospitalModel', hospitalSchema)
+module.exports = new mongoose.model('hospitalModel', hospitalSchema)

@@ -10,6 +10,8 @@ var donorSchema = new mongoose.Schema({
     n95MasksAvailable: Number,
     faceShieldsAvailable: Number,
     suitsAvailable: Number,
+    lat: Number,
+    lon: Number
 })
 
-module.exports = new mongoose.Model('donorModel', donorSchema)
+module.exports = new mongoose.model('donorModel', donorSchema)
