@@ -5,6 +5,11 @@ var donorSchema = new mongoose.Schema({
     city: String,
     stateProvince: String,
     country: String,
+    vaccinesAvailable: Number,
+    surgicalMasksAvailable: Number,
+    n95MasksAvailable: Number,
+    faceShieldsAvailable: Number,
+    suitsAvailable: Number,
 })
 
 module.exports = new mongoose.Model('donorModel', donorSchema)
