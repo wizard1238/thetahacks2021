@@ -1,13 +1,20 @@
 <template>
   <div>
-    <h1 class="font-medium text-6xl text-center pt-24">AMAZING PPE THINGY</h1>
-    <p class="text-center text-xl pt-6">A logistical hub to connect PPE donors with front-line workers during COVID-19</p>
-    <img src="@/assets/mask.png">
-    <img src="@/assets/nurses.png">
+    <h1 class="pt-24 text-6xl font-medium text-center">AMAZING PPE THINGY</h1>
+    <p class="pt-6 text-xl text-center">
+      A logistical hub to connect healthcare equipment donors with the medical industry
+    </p>
     <div class="flex justify-center pt-8">
-      <div class="inline-flex text-center bg-blue-600 rounded-lg py-3 px-4 text-white">
-        Get started
-      </div>
+      <router-link
+      :to="{ name: 'Donors' }"
+      class="inline-flex px-4 py-3 mx-3 text-center text-white bg-blue-600 rounded-lg">
+        Sign up to Donate
+      </router-link>
+      <router-link
+        :to="{ name: 'Hospitals' }"
+        class="inline-flex px-4 py-3 mx-3 text-center text-white bg-blue-600 rounded-lg">
+        Sign up to Receive
+      </router-link>
     </div>
   </div>
 </template>
