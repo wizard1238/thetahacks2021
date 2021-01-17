@@ -115,7 +115,7 @@ export default {
   methods: {
     submitForm(){
       axios({
-        type: 'post',
+        method: 'post',
         url: 'http://localhost:3000/createDonor',
         body: this.inputs
       })
