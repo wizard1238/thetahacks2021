@@ -6,10 +6,15 @@ var donorSchema = new mongoose.Schema({
     stateProvince: String,
     country: String,
     vaccinesAvailable: Number,
-    surgicalMasksAvailable: Number,
-    n95MasksAvailable: Number,
+    vaccinesToDonate: Number,
+    surgicalMasksAvailable: Number, 
+    surgicalMasksToDonate: Number,
+    n95MasksAvailable: Number, 
+    n95MasksToDonate: Number,
     faceShieldsAvailable: Number,
+    faceShieldsToDonate: Number,
     suitsAvailable: Number,
+    suitsToDonate: Number,
     lat: Number,
     lon: Number
 })
