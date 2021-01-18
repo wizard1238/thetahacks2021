@@ -55,19 +55,19 @@
                 Located in {{ hospital.hospitalCity }}, {{ hospital.hospitalStateProvince }}
               </div>
               <div>
-                {{ hospital.faceShieldsIncoming }} available face shields
+                {{ hospital.faceShieldsIncoming }} face shields to donate
               </div>
               <div>
-                {{ hospital.n95MasksIncoming }} available N95 masks
+                {{ hospital.n95MasksIncoming }} N95 masks to donate
               </div>
               <div>
-                {{ hospital.suitsIncoming }} available suits
+                {{ hospital.suitsIncoming }} suits to donate
               </div>
               <div>
-                {{ hospital.surgicalMasksIncoming }} available surgical masks
+                {{ hospital.surgicalMasksIncoming }} surgical masks to donate
               </div>
               <div>
-                {{ hospital.vaccinesIncoming }} vaccines available
+                {{ hospital.vaccinesIncoming }} vaccines to donate
               </div>
             </div>
           </div>
