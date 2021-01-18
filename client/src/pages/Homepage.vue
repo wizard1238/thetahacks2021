@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="pt-24 text-6xl font-medium text-center">AMAZING PPE THINGY</h1>
+    <h1 class="pt-24 text-6xl font-medium text-center">PPEConnect</h1>
     <p class="pt-6 text-xl text-center">
       A logistical hub to connect healthcare equipment donors with the medical industry
     </p>

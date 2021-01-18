@@ -16,6 +16,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "donors" */ '../pages/Donors.vue')
   },
   {
+    path: '/donormatch/:donorName',
+    name: 'DonorMatch',
+    props: true,
+    component: () => import(/* webpackChunkName: "donors" */ '../pages/DonorMatch.vue')
+  },
+  {
     path: '/hospitals',
     name: 'Hospitals',
     component: () => import(/* webpackChunkName: "hospitals" */ '../pages/Hospitals.vue')

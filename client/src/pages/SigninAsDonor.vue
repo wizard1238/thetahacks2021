@@ -1,48 +1,76 @@
 <template>
   <div>
-      <div class="text-center mt-8">
-        <h1 class="text-3xl font-bold">Sign In</h1>
-        <div>Acccess our public database of information</div>
+      <div v-if="Object.keys(res).length == 0 || Object.keys(res.donor).length == 0">
+        <div class="text-center mt-8">
+          <h1 class="text-3xl font-bold">Sign In</h1>
+          <div>See your donations</div>
+        </div>
+        <form @submit.prevent="submitForm()" class="w-1/4 p-16 mx-auto bg-gray-200 rounded-lg mt-8">
+          <div class="my-4">
+            <label class="block mb-1">Full Name</label>
+            <input
+              v-model="inputs.name"
+              class="w-full px-3 py-1 border-2 border-gray-400 text-black rounded text-nord0 bg-nord4"
+              placeholder="Ada Lovelace"
+              type="text"
+            />
+          </div>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+            Signin
+          </button>
+        </form>
       </div>
-      <form @submit.prevent="submitForm()" class="w-1/4 p-16 mx-auto text-white bg-gray-600 rounded-lg mt-8">
-        <div class="my-4">
-          <label class="block mb-1">Full Name</label>
-          <input
-            v-model="inputs.name"
-            class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
-            placeholder="Ada Lovelace"
-            type="text"
-          />
+      <div v-else>
+        <div class="text-center my-8">
+          <h1 class="text-3xl font-bold">Welcome, {{res.donor.name}}!</h1>
         </div>
-        <button type="submit" class="px-4 py-2 bg-blue-400 rounded">
-          Sign In
-        </button>
-      </form>
-      <div v-if="res != {}">
-        <div>
-          City: {{ res.city }}
+        <div class="mx-auto w-1/4 p-8 rounded-lg text-center bg-gray-100">
+          <div class="text-2xl font-semibold"> Donor Info </div>
+          <div>
+            From {{ res.donor.city }}, {{ res.donor.stateProvince }}, {{ res.donor.country }}
+          </div>
+          <div>
+            {{ res.donor.faceShieldsAvailable }} available face shields
+          </div>
+          <div>
+            {{ res.donor.n95MasksAvailable }} available N95 masks
+          </div>
+          <div>
+            {{ res.donor.suitsAvailable }} available suits
+          </div>
+          <div>
+            {{ res.donor.surgicalMasksAvailable }} available surgical masks
+          </div>
+          <div>
+            {{ res.donor.vaccinesAvailable }} vaccines available
+          </div>
         </div>
-        <div>
-          State/Province: {{ res.stateProvince }}
-        </div>
-        <div>
-          Country {{ res.country }}
-        </div>
-        <div>
-          # of available face shields: {{ res.faceShieldsAvailable }}
-        </div>
-        <div>
-          # of available N95 masks: {{ res.n95MasksAvailable }}
-        </div>
-        <div>
-          # of available suits: {{ res.suitsAvailable }}
-        </div>
-        <div>
-          # of available surgical masks: {{ res.surgicalMasksAvailable }}
-        </div>
-        <div>
-          # of vaccines available: {{ res.vaccinesAvailable }}
-        </div>
+
+        <div class="text-2xl font-semibold text-center mt-8"> Hospital Info </div>
+        <div class="text-center" v-if="res.hospitals.length ==0"> No hospitals matched </div>
+        <div v-else>
+            <div class="mx-auto w-1/4 p-8 rounded-lg text-center bg-gray-100" v-for="hospital in res.hospitals" :key="hospital.key">
+              <div class="text-2xl font-semibold text-center">{{ hospital.hospitalName }}</div>
+              <div>
+                Located in {{ hospital.hospitalCity }}, {{ hospital.hospitalStateProvince }}
+              </div>
+              <div>
+                {{ hospital.faceShieldsIncoming }} available face shields
+              </div>
+              <div>
+                {{ hospital.n95MasksIncoming }} available N95 masks
+              </div>
+              <div>
+                {{ hospital.suitsIncoming }} available suits
+              </div>
+              <div>
+                {{ hospital.surgicalMasksIncoming }} available surgical masks
+              </div>
+              <div>
+                {{ hospital.vaccinesIncoming }} vaccines available
+              </div>
+            </div>
+          </div>
       </div>
     </div>
 </template>
@@ -57,14 +85,17 @@ export default {
       inputs: {
         name: '',
       },
-      res: {},
+      res: {
+        donor: {},
+        hospitals: []
+      },
     }
   },
   methods: {
     submitForm() {
       axios({
         method: 'post',
-        url: 'http://localhost:3000/getDonor',
+        url: 'http://simfony.tech/api/getDonor',
         data: this.inputs,
       })
         .then((res) => this.res = res.data)

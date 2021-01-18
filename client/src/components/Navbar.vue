@@ -5,7 +5,7 @@
         :to="{ 'name': 'Home' }"
         class="font-medium"
        >
-        AMAZING PPE THINGY
+        PPEConnect
       </router-link>
     </div>
   </div>

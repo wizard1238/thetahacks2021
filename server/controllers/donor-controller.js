@@ -31,25 +31,29 @@ exports.createDonor = function(req, res, next) {
             request(`https://us1.locationiq.com/v1/search.php?key=pk.a0ecaa314667144bb2efff2a53442a36&q=${donorCity}, ${donorStateProvince}&format=json`, { json: true }, (err, notres, body) => {
             // request(`https://us1.locationiq.com/v1/search.php?key=pk.a0ecaa314667144bb2efff2a53442a36&q=san jose, california&format=json`, { json: true }, (err, notres, body) => {
                 if (err) { return console.log(err); }
-                donorLat = body[0].lat
-                donorLon = body[0].lon
-        
-                var donor = new donorModel({
-                    name: donorName,
-                    city: donorCity,
-                    stateProvince: donorStateProvince,
-                    country: donorCountry,
-                    vaccinesAvailable: donorVaccinesAvailable,
-                    surgicalMasksAvailable: donorSurgicalMasksAvailable,
-                    n95MasksAvailable: donorN95MasksAvailable,
-                    faceShieldsAvailable: donorFaceShieldsAvailable,
-                    suitsAvailable: donorSuitsAvailable,
-                    lat: donorLat,
-                    lon: donorLon,
-                })
+                if (body[0]) {
+                    donorLat = body[0].lat
+                    donorLon = body[0].lon
             
-                donor.save()
-                res.sendStatus(200)
+                    var donor = new donorModel({
+                        name: donorName,
+                        city: donorCity,
+                        stateProvince: donorStateProvince,
+                        country: donorCountry,
+                        vaccinesAvailable: donorVaccinesAvailable,
+                        surgicalMasksAvailable: donorSurgicalMasksAvailable,
+                        n95MasksAvailable: donorN95MasksAvailable,
+                        faceShieldsAvailable: donorFaceShieldsAvailable,
+                        suitsAvailable: donorSuitsAvailable,
+                        lat: donorLat,
+                        lon: donorLon,
+                    })
+                
+                    donor.save()
+                    res.sendStatus(200)
+                } else {
+                    res.status(400).send('There was an error')
+                }
             });
         } else {
             res.status(400).send("Donor already registered")
@@ -61,22 +65,29 @@ exports.createDonor = function(req, res, next) {
 exports.getDonor = function(req, res, next) {
     var donorName = req.body.name
     
-    donorModel.findOne({name: donorName}, function(donorErr, donor) {
-        if (err) console.log(err)
+    donorModel.findOne({name: donorName}, function(donorErr, returnedDonor) {
+        if (donorErr) console.log(donorErr)
 
         var hospitalSendArray = []
 
         hospitalModel.find({}, function(hospitalErr, hospitals) {
             for (var hospital of hospitals) {
-                if (donor) {
-                    for (var donor in hospital.donor) {
+                
+                if (returnedDonor) {
+                    
+                    for (var donor of hospital.donors) {
                         if (donor.donorName == donorName) {
                             hospitalSendArray.push({
                                 hospitalName: hospital.name,
                                 hospitalCity: hospital.city,
                                 hospitalStateProvince: hospital.stateProvince,
                                 hospitalStreetAddress: hospital.streetAddress,
-                                ...donor,
+                                donorName: donor.donorName,
+                                vaccinesIncoming: donor.vaccinesIncoming,
+                                surgicalMasksIncoming: donor.surgicalMasksIncoming,
+                                n95MasksIncoming: donor.n95MasksIncoming,
+                                faceShieldsIncoming: donor.faceShieldsIncoming,
+                                suitsIncoming: donor.suitsIncoming,
                             })
 
                             break
@@ -84,11 +95,11 @@ exports.getDonor = function(req, res, next) {
                     }
                 }                
             }
-        })
-
-        res.send({
-            donor: donor,
-            hospitals: hospitalSendArray
+            
+            res.send({
+                donor: returnedDonor,
+                hospitals: hospitalSendArray,
+            })
         })
     })
 }
@@ -97,109 +108,106 @@ exports.matchDonorWithHospital = function(req, res, next) {
     var donorName = req.body.name
 
     donorModel.findOne({name: donorName}, function(donorErr, donor) {
-        if (!donor) {
+        if (donor) {
             hospitalModel.find({}, function(hospitalErr, hospitals) {
-                var hospitalArray = []             
-                
-                for (var hospital of hospitals) {
-                    hospitalArray.push({
-                        ...hospital,
-                        distance: calculateDistance(donor.lon, donor.lat, hospital.lon, hospital.lat)
+                var hospitalsArray = []    
+                var hospitalIndexes = {}
+
+                for (var i in hospitals) {
+                    hospitalIndexes[hospitals[i].name] = i
+                    hospitalsArray.push({
+                        ...hospitals[i]._doc,
+                        distance: calculateDistance(donor.lon, donor.lat, hospitals[i].lon, hospitals[i].lat)
                     })
                 }
                 
-                hospitalArray.sort(function(a, b) {
+                hospitalsArray.sort(function(a, b) {
                     return a.distance - b.distance
                 })
                 
                 var loopCounter = 0
                 for (var hospital of hospitalsArray) {
-                    //vaccine
-                    if (hospital.vaccinesNeeded > 0 && donor.vaccinesAvailable > 0) {
-                        var numberOfVaccinesToDonate = 0
-                        while (donor.vaccinesAvailable > 0 && hospital.vaccinesNeeded > 0) {
-                            donor.vaccinesAvailable--
-                            donor.vaccinesToDonate++
-                            hospitalArray[loopCounter].vaccinesNeeded--
-                            hospitalArray[loopCounter].vaccinesIncoming++
-                            hospital.vaccinesNeeded--
-                            hospital.vaccinesIncoming++
-                            numberOfVaccinesToDonate++
-                        }
+                    var donorIndexes = {}
 
-                        hospital.numberOfVaccinesToDonate = numberOfVaccinesToDonate
+                    if (hospitals[hospitalIndexes[hospital.name]].donors.length != 0) {
+                        for (var i in hospitals[hospitalIndexes[hospital.name]].donors) {
+                            donorIndexes[hospitals[hospitalIndexes[hospital.name]].donors[i].donorName] = i
+                        }
+                        if (!donorIndexes[donorName]) {
+                            var tempLength = hospital.donors.length
+
+                            donorIndexes[donorName] = tempLength
+                            hospital.donors.push({
+                                donorName: donorName,
+                                vaccinesIncoming: 0,
+                                surgicalMasksIncoming: 0,
+                                n95MasksIncoming: 0,
+                                faceShieldsIncoming: 0,
+                                suitsIncoming: 0,
+                            })
+                        }
+                    } else {
+                        donorIndexes[donorName] = 0
+                        hospitals[hospitalIndexes[hospital.name]].donors.push({
+                            donorName: donorName,
+                            vaccinesIncoming: 0,
+                            surgicalMasksIncoming: 0,
+                            n95MasksIncoming: 0,
+                            faceShieldsIncoming: 0,
+                            suitsIncoming: 0,
+                        })
                     }
 
-                    //surgical masks
-                    if (hospital.surgicalMasksNeeded > 0 && donor.surgicalMasksAvailable> 0) {
-                        var numberOfSurgicalMasksToDonate = 0
-                        while (donor.surgicalMasksAvailable > 0 && hospital.surgicalMasksNeeded > 0){
-                            donor.surgicalMasksAvailable--
-                            donor.surgicalMasksToDonate++
-                            hospitalArray[loopCounter].surgicalMasksNeeded--
-                            hospitalArray[loopCounter].surgicalMasksIncoming++
-                            hospital.surgicalMasksNeeded--
-                            hospita.surgicalMasksIncoming++
-                            numberOfSurgicalMasksToDonate++
+                    //vaccine
+                    if (hospitalsArray[loopCounter].vaccinesNeeded > 0 && donor.vaccinesAvailable > 0) {
+                        while (donor.vaccinesAvailable > 0 && hospitalsArray[loopCounter].vaccinesNeeded > 0) {
+                            donor.vaccinesAvailable--
+                            hospitalsArray[loopCounter].vaccinesNeeded--
+                            hospitals[hospitalIndexes[hospital.name]].donors[donorIndexes[donorName]].vaccinesIncoming++
                         }
-
-                        hospital.numberOfSurgicalMasksToDonate = numberOfSurgicalMasksToDonate
+                    }
+                    //surgical masks
+                    if (hospitalsArray[loopCounter].surgicalMasksNeeded > 0 && donor.surgicalMasksAvailable> 0) {
+                        while (donor.surgicalMasksAvailable > 0 && hospitalsArray[loopCounter].surgicalMasksNeeded > 0){
+                            donor.surgicalMasksAvailable--
+                            hospitalsArray[loopCounter].surgicalMasksNeeded--
+                            hospitals[hospitalIndexes[hospital.name]].donors[donorIndexes[donorName]].surgicalMasksIncoming++
+                        }
                     }
 
                     //n95
-                    if (hospital.n95MasksNeeded > 0 && donor.n95MasksAvailable > 0) {
-                        var numberOfN95MasksToDonate = 0
-                        while (donor.n95MasksAvailable > 0 && hospital.n95MasksNeeded > 0){
+                    if (hospitalsArray[loopCounter].n95MasksNeeded > 0 && donor.n95MasksAvailable > 0) {
+                        while (donor.n95MasksAvailable > 0 && hospitalsArray[loopCounter].n95MasksNeeded > 0){
                             donor.n95MasksAvailable--
-                            donor.n95MasksToDonate++
-                            hospitalArray[loopCounter].n95MasksNeeded--
-                            hospitalArray[loopCounter].n95MasksIncoming++
-                            hospital.n95MasksNeeded--
-                            hospital.n95MasksIncoming++
-                            numberOfN95MasksToDonate++
+                            hospitalsArray[loopCounter].n95MasksNeeded--
+                            hospitals[hospitalIndexes[hospital.name]].donors[donorIndexes[donorName]].n95MasksIncoming++
                         }
-
-                        hospital.numberOfN95MasksToDonate = numberOfN95MasksToDonate
                     }
-
                     //face shield
-                    if (hospital.faceShieldsNeeded > 0 && donor.faceShieldsAvailable > 0) {
-                        var numberOfFaceShieldsToDonate = 0
-                        while (donor.faceShieldsAvailable > 0 && hospital.faceShieldsNeeded > 0){
+                    if (hospitalsArray[loopCounter].faceShieldsNeeded > 0 && donor.faceShieldsAvailable > 0) {
+                        while (donor.faceShieldsAvailable > 0 && hospitalsArray[loopCounter].faceShieldsNeeded > 0){
                             donor.faceShieldsAvailable--
-                            donor.faceShieldsToDonate++
-                            hospitalArray[loopCounter].faceShieldsNeeded--
-                            hospitalArray[loopCounter].faceShieldsIncoming++
-                            hospital.faceShieldsNeeded--
-                            hospital.faceShieldsIncoming++
-                            numberOfFaceShieldsToDonate++
+                            hospitalsArray[loopCounter].faceShieldsNeeded--
+                            hospitals[hospitalIndexes[hospital.name]].donors[donorIndexes[donorName]].faceShieldsIncoming++
                         }
-
-                        hospital.numberOfFaceShieldsToDonate = numberOfFaceShieldsToDonate
                     }
-
                     //suits
-                    if (hospital.suitsNeeded > 0 && donor.suitsAvailable > 0) {
-                        var numberOfSuitsToDonate = 0
-                        while (donor.suitsAvailable > 0 && hospital.suitsNeeded > 0){
+                    if (hospitalsArray[loopCounter].suitsNeeded > 0 && donor.suitsAvailable > 0) {
+                        while (donor.suitsAvailable > 0 && hospitalsArray[loopCounter].suitsNeeded > 0){
                             donor.suitsAvailable--
-                            donor.suitsToDonate++
-                            hospitalArray[loopCounter].suitsNeeded--
-                            hospitalArray[loopCounter].suitsIncoming++
-                            hospital.suitsNeeded--
-                            hospital.suitsIncoming++
-                            numberOfSuitsToDonate++
+                            hospitalsArray[loopCounter].suitsNeeded--
+                            hospitals[hospitalIndexes[hospital.name]].donors[donorIndexes[donorName]].suitsIncoming++
                         }
-
-                        hospital.numberOfSuitsToDonate = numberOfSuitsToDonate
                     }
 
-                    hospitalArray[loopCounter].save()
                     loopCounter++
                 }
-                
+
+                for (hospital of hospitals) {
+                    hospital.save()
+                }
                 donor.save()
-                res.send(hospitalArray)
+                res.sendStatus(200)
             })
         } else {
             res.sendStatus(400)
@@ -208,23 +216,33 @@ exports.matchDonorWithHospital = function(req, res, next) {
 }
 
 exports.donated = function(req, res, next) { //Apply staging
-    //loop through hospital array, update hospital model
-
-    /*
-    hospitalModel.find({}, function(err, hospital) {
-       hospital.vaccinesNeeded -= req.body.hospitalArray[]
-    })*/
-    for (var hospitals in req.body.hospitalArray){
-        hospitalModel.find({name: hospitalArray[hospitals].name}, function(err, hospital){
-            hospital.vaccinesNeeded -= hospitalArray[hospitals].vaccinesIncoming
-        })
-    }
+    var donorName = req.body.name
     
-    //vaccines
+    hospitalModel.find({}, function(err, hospitals) {
+       for (var hospital of hospitals) {
+            if (hospital.donors) {
+                for (var donor of hospital.donors) {    
+                    if (donor.donorName == donorName) {
+                        hospital.vaccinesNeeded -= donor.vaccinesIncoming
+                        donor.vaccinesIncoming = 0
 
+                        hospital.surgicalMasksNeeded -= donor.surgicalMasksIncoming
+                        donor.surgicalMasksIncoming = 0
 
-    res.sendStatus(200) //if success
-    res.sendStatus(400) //if fail
+                        hospital.n95MasksNeeded -= donor.n95MasksIncoming
+                        donor.n95MasksIncoming = 0
+
+                        hospital.faceShieldsNeeded -= donor.faceShieldsIncoming
+                        donor.faceShieldsIncoming = 0
+
+                        hospital.suitsNeeded -= donor.suitsIncoming
+                        donor.suitsIncoming = 0
+                    }
+                }
+            }   
+            hospital.save()
+        }
+    })
     
-    
+    res.sendStatus(200)
 }

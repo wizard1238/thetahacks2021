@@ -19,6 +19,8 @@ exports.createHospital = function(req, res, next) {
         if (!hospital) { 
             request(`https://us1.locationiq.com/v1/search.php?key=pk.a0ecaa314667144bb2efff2a53442a36&q=${hospitalCity}, ${hospitalStateProvince}&format=json`, { json: true }, (err, notres, body) => {
                 if (err) { return console.log(err); }
+                
+
                 hospitalLat = body[0].lat
                 hospitalLon = body[0].lon
                 
