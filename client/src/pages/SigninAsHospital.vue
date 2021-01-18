@@ -29,19 +29,19 @@
         From {{ res.city }}, {{ res.stateProvince }}, {{ res.country }}
       </div>
       <div>
-        {{ res.faceShieldsNeeded }} available face shields
+        {{ res.faceShieldsNeeded }} needed face shields
       </div>
       <div>
-        {{ res.n95MasksNeeded }} available N95 masks
+        {{ res.n95MasksNeeded }} needed N95 masks
       </div>
       <div>
-        {{res.suitsNeeded }} available suits
+        {{res.suitsNeeded }} needed suits
       </div>
       <div>
-        {{ res.surgicalMasksNeeded }} available surgical masks
+        {{ res.surgicalMasksNeeded }} needed surgical masks
       </div>
       <div>
-        {{ res.vaccinesNeeded }} vaccines available
+        {{ res.vaccinesNeeded }} vaccines needed
       </div>
     </div>
   </div>
