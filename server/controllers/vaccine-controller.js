@@ -34,6 +34,10 @@ exports.getVaccinePatient = function(req, res, next) {
     })
 }
 
+exports.updateSymptons = function(req, res, next) {
+    patient.symptons = req.body.symptons
+}
+
 exports.getVaccinePatients = function(req, res, next) {
     vaccineModel.find({}, function(err, patients) {
         if (err) console.log(err)

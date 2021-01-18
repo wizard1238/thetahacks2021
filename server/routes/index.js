@@ -9,4 +9,9 @@ router.get('/', function(req, res, next) {
 var donorController = require('../controllers/donor-controller')
 router.post('/createDonor', donorController.createDonor)
 router.post('/getDonor', donorController.getDonor)
+router.post('/signInAsDonor', donorController.signInAsDonor)
+
+var hospitalController = require('../controllers/hospital-controller')
+router.post('/createHospital', hospitalController.createHospital)
+
 module.exports = router;

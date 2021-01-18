@@ -16,6 +16,13 @@
         Sign up to Receive
       </router-link>
     </div>
+    <div class="flex justify-center pt-8">
+      <router-link
+      :to="{ name: 'Signin' }"
+      class="inline-flex px-4 py-3 mx-3 text-center text-blue-400">
+        Already signed up?
+      </router-link>
+    </div>
   </div>
 </template>
 

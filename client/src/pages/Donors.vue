@@ -1,10 +1,14 @@
 <template>
   <div>
-    <form @submit.prevent="submitForm()" class="w-1/4 p-16 mx-auto text-white bg-gray-600 rounded-lg">
+    <div class="text-center mt-8">
+      <h1 class="text-3xl font-bold">Donors: Register to Give</h1>
+      <div>Contribute to your local community, save lives, and provide hospitals with necessary equipment</div>
+    </div>
+    <form @submit.prevent="submitForm()" class="w-1/4 p-16 mx-auto text-white bg-gray-600 rounded-lg mt-8">
       <div class="my-4">
         <label class="block mb-1">Full Name</label>
         <input
-          v-model="inputs.donorName"
+          v-model="inputs.name"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="Ada Lovelace"
           type="text"
@@ -14,7 +18,7 @@
         <div class="mr-2 col-span-1">
           <label class="block mb-1">City</label>
           <input
-            v-model="inputs.donorCity"
+            v-model="inputs.city"
             class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
             placeholder="San Jose"
             type="text"
@@ -23,7 +27,7 @@
         <div class="col-span-1">
           <label class="block mb-1">State/Province</label>
           <input
-            v-model="inputs.donorStateProvince"
+            v-model="inputs.stateProvince"
             class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
             placeholder="California"
             type="text"
@@ -33,7 +37,7 @@
       <div class="my-4">
         <label class="block mb-1">Country</label>
         <input
-          v-model="inputs.donorCountry"
+          v-model="inputs.country"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="United States"
           type="text"
@@ -42,7 +46,7 @@
       <div class="my-4">
         <label class="block mb-1"># of Vaccines</label>
         <input
-          v-model="inputs.donorVaccinesAvailable"
+          v-model="inputs.vaccinesAvailable"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="500"
           type="number"
@@ -51,7 +55,7 @@
       <div class="my-4">
         <label class="block mb-1"># of Surgical Masks</label>
         <input
-          v-model="inputs.donorSurgicalMasksAvailable"
+          v-model="inputs.surgicalMasksAvailable"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="500"
           type="number"
@@ -60,7 +64,7 @@
       <div class="my-4">
         <label class="block mb-1"># of N95 Masks</label>
         <input
-          v-model="inputs.donorN95MasksAvailable"
+          v-model="inputs.nN95MasksAvailable"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="500"
           type="number"
@@ -69,7 +73,7 @@
       <div class="my-4">
         <label class="block mb-1"># of Face Shields</label>
         <input
-          v-model="inputs.donorFaceShieldsAvailable"
+          v-model="inputs.faceShieldsAvailable"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="500"
           type="number"
@@ -78,13 +82,14 @@
       <div class="my-4">
         <label class="block mb-1"># of Suits</label>
         <input
-          v-model="inputs.donorSuitsAvailable"
+          v-model="inputs.suitsAvailable"
           class="w-full px-3 py-1 text-black rounded text-nord0 bg-nord4"
           placeholder="500"
           type="number"
         />
       </div>
       <div>
+        <div v-if="errMsg" class="text-red-200">{{ errMsg }}</div>
         <button type='submit'
         class="px-4 py-2 bg-blue-400 rounded-md">Sign Up!</button>
       </div>
@@ -99,16 +104,17 @@ export default {
   name: 'Donors',
   data() {
     return {
+      errMsg: '',
       inputs: {
-        donorName: '',
-        donorCity: '',
-        donorStateProvince: '',
-        donorCountry: '',
-        donorVaccinesAvailable: 0,
-        donorSurgicalMasksAvailable: 0,
-        donorN95MasksAvailable: 0,
-        donorFaceShieldsAvailable: 0,
-        donorSuitsAvailable: 0,
+        name: '',
+        city: '',
+        stateProvince: '',
+        country: '',
+        vaccinesAvailable: 0,
+        surgicalMasksAvailable: 0,
+        n95MasksAvailable: 0,
+        faceShieldsAvailable: 0,
+        suitsAvailable: 0,
       }
     }
   },
@@ -117,10 +123,13 @@ export default {
       axios({
         method: 'post',
         url: 'http://localhost:3000/createDonor',
-        body: this.inputs
+        data: this.inputs,
       })
         .then((res) => console.log(res.body.data))
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          this.errMsg = err.response.data
+          console.log(err)
+        })
     }
   },
 }

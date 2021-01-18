@@ -1,20 +1,21 @@
 var hospitalModel = require('../models/hospital-model')
+var request = require('request')
 
-exports.hospitalDonor = function(req, res, next) {
+exports.createHospital = function(req, res, next) {
     var hospitalName = req.body.name
     var hospitalCity = req.body.city
     var hospitalStateProvince = req.body.stateProvince
     var hospitalCountry = req.body.country
     var hospitalStreetAddress = req.body.streetAddress
-    var hospitalVaccinesNeeded = req.body.surgicalMasksAvailable
-    var hospitalSurgicalMasksNeeded = req.body.n95MasksAvailable
-    var hospitalN95MasksNeeded = req.body.faceShieldsAvailable
-    var hospitalFaceShieldsNeeded = req.body.suitsAvailable
+    var hospitalVaccinesNeeded = req.body.vaccinesNeeded
+    var hospitalSurgicalMasksNeeded = req.body.surgicalMasksNeeded
+    var hospitalN95MasksNeeded = req.body.n95MasksNeeded
+    var hospitalFaceShieldsNeeded = req.body.faceShieldsNeeded
     var hospitalSuitsNeeded = req.body.suitsNeeded
 
     var hospitalLat = req.body.hospitalLat
     var hospitalLon = req.body.hospitalLon
-    hospitalModel.findOne({name: hospitalName}, function(err, donor) {
+    hospitalModel.findOne({name: hospitalName}, function(err, hospital) {
         if (!hospital) { 
             request(`https://us1.locationiq.com/v1/search.php?key=pk.a0ecaa314667144bb2efff2a53442a36&q=${hospitalCity}, ${hospitalStateProvince}&format=json`, { json: true }, (err, notres, body) => {
                 if (err) { return console.log(err); }
@@ -52,5 +53,11 @@ exports.getHospital = function(req, res, next) {
 
         res.send(hospital)
     })
+}
+
+exports.signInAsHospital = function(req, res, next) {
+    var hospitalName = req.body.name
+
+    req.session.hospitalName = hospitalName
 }
 

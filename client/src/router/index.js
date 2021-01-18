@@ -19,7 +19,23 @@ const routes = [
     path: '/hospitals',
     name: 'Hospitals',
     component: () => import(/* webpackChunkName: "hospitals" */ '../pages/Hospitals.vue')
-  }
+  },
+  {
+    path: '/signin',
+    name: 'Signin',
+    component: () => import('../pages/Signin.vue')
+  },
+  {
+    path: '/signinasdonor',
+    name: 'SigninAsDonor',
+    component: () => import('../pages/SigninAsDonor')
+  },
+  {
+    path: '/signinashospital',
+    name: 'SigninAsHospital',
+    component: () => import('../pages/SigninAsHospital')
+  },
+  
 ]
 
 const router = new VueRouter({

@@ -45,7 +45,7 @@ exports.getClinic = function(req, res, next) {
     
     donorModel.findOne({name: clinicName}, function(err, clinic) {
         if (err) console.log(err)
-
+        
         res.send(clinic)
     })
 }

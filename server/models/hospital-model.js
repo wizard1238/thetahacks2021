@@ -7,15 +7,18 @@ var hospitalSchema = mongoose.Schema({
     country: String,
     streetAddress: String,
     vaccinesNeeded: Number,
-    vaccinesIncoming: Number,
     surgicalMasksNeeded: Number,
-    surgicalMasksIncoming: Number,
     n95MasksNeeded: Number,
-    n95MasksIncoming: Number,
     faceShieldsNeeded: Number,
-    faceShieldsIncoming: Number,
     suitsNeeded: Number,
-    suitsIncoming: Number,
+    donors: [{
+        donorName: String,
+        vaccinesIncoming: Number,
+        surgicalMasksIncoming: Number,
+        n95MasksIncoming: Number,
+        faceShieldsIncoming: Number,
+        suitsIncoming: Number,
+    }],
     lat: Number,
     lon: Number
 })
